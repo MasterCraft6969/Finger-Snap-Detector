@@ -4,7 +4,6 @@ import numpy as np
 import time
 import keyboard
 import threading
-import webbrowser
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -36,14 +35,16 @@ class SnappingDetector(object):
             input_device_index=default_device_index,
             frames_per_buffer=CHUNK,
             stream_callback=self.callback)
-        print("Starting detection with default microphone... (Press 'p' to pause/resume detection and 'c' to terminate the script)")
+        print("Starting detection with default microphone... (Press 'p' to pause/resume detection)")
         self.stream.start_stream()
 
     def callback(self, in_data, frame_count, time_info, status):
+        if not self.detecting:
+            return (None, pyaudio.paContinue)
+
         if time.time() - self.start_time < IGNORE_TIME:
             return (None, pyaudio.paContinue)
 
-        
         result = sf.fft(np.frombuffer(in_data, dtype=np.int16))
         self.y = np.abs(result)[:int(CHUNK / 2)]
         mean = np.mean(self.y)
@@ -84,7 +85,7 @@ class SnappingDetector(object):
         else:
             print("Paused detection.")
 
-def actions(detector):
+def keyboard(detector):
     while True:
         if keyboard.is_pressed('c'):
             print("\nExiting...")
@@ -93,10 +94,9 @@ def actions(detector):
             detector.toggle_detection()
             time.sleep(0.5)  
 
-
 detector = SnappingDetector()
 detect_thread = threading.Thread(target=detector.start)
-control_thread = threading.Thread(target=actions, args=(detector,))
+control_thread = threading.Thread(target=keyboard, args=(detector,))
 
 detect_thread.start()
 control_thread.start()
