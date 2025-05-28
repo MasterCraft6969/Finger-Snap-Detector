@@ -13,7 +13,7 @@ A python script to detect finger snapping to enter a keyboard input (mainly used
 You can pause or resume detection by pressing p while the python shell is highlighted.
 
 ## Kill the script (yes apparently)
-You can kill the script by pressing c because KeyboardBreak wont work as the keyboard is being picked up to look for keypresses so it is intercepted (that's my explanation at least)
+You can kill the script by pressing c because KeyboardBreak won't work as the keyboard is being picked up to look for keypresses so it is intercepted (that's my explanation at least)
 
 # That's it!
 ## What else could there be? 
